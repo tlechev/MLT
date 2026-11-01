@@ -17,6 +17,7 @@ Dated history of what changed and why. Groups: Added, Changed, Fixed, Removed, D
 - notebook 02_baselines is done with its findings filled from the printed numbers; STATUS next steps now start with the protocol decision and the data-handling decisions
 - notebook 02_baselines reads only the frozen window and adds the development / validation baseline table (status in progress until re-run); ADR 0004 clarified so that test-block baselines are produced in notebook 04
 - DATA_START set to the first candle of the owner's cache (2023-10-30 22:00); notebook 01 uses the frozen window constants, notebook 02 checks coverage and prints the dates of the data exceptions; STATUS step 3 is now the model comparison
+- ADR 0001 now holds the experiment plan for the model comparison (reference bars, four families, live-only features, walk-forward training, trial register, acceptance rule); awaiting the owner's approval
 
 ### Docs
 - ARCHITECTURE contract for the protocol; STATUS next steps

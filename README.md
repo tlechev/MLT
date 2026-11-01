@@ -116,6 +116,7 @@ Experiment results with numbers, data period and costs: [docs/RESEARCH_LOG.md](d
 - **Changed:** notebook 02_baselines is done with its findings filled from the printed numbers; STATUS next steps now start with the protocol decision and the data-handling decisions
 - **Changed:** notebook 02_baselines reads only the frozen window and adds the development / validation baseline table (status in progress until re-run); ADR 0004 clarified so that test-block baselines are produced in notebook 04
 - **Changed:** DATA_START set to the first candle of the owner's cache (2023-10-30 22:00); notebook 01 uses the frozen window constants, notebook 02 checks coverage and prints the dates of the data exceptions; STATUS step 3 is now the model comparison
+- **Changed:** ADR 0001 now holds the experiment plan for the model comparison (reference bars, four families, live-only features, walk-forward training, trial register, acceptance rule); awaiting the owner's approval
 - **Docs:** ARCHITECTURE contract for the protocol; STATUS next steps
 
 **2026-10-28**
