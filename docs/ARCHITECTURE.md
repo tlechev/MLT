@@ -30,6 +30,9 @@ Each module depends only on the ones before it, so it can be tested in isolation
 | `Forecaster` | `mlt/models/base.py` | `predict` required; `fit` / `partial_fit` optional; `get_state` / `set_state` so live resumes instead of retraining. Model-agnostic on purpose, so every family competes fairly. |
 | `simulate` / `metrics` | `mlt/evaluation.py` | A position decided at the close of bar *t* is held over bar *t+1*; costs are charged on position changes; funding is charged per held hour (sign and timing assumed, shown with sensitivity). The backtest module must reproduce these conventions. |
 | Evaluation protocol | `mlt/protocol.py` | Frozen data end and three time blocks on candle close time; the test block can be read only with `allow_test=True` (once, for the final candidate); batch training purges `horizon` rows before a block. |
+| `walk_forward` | `mlt/models/walkforward.py` | Batch counterpart of `run_online`: retrain every N bars on rows whose target is already known (`i <= r - horizon`), predict the next N bars without refitting. |
+| `SklearnForecaster` | `mlt/models/sklearn_wrap.py` | Adapter that lets a scikit-learn regressor satisfy `Forecaster`; imported explicitly so the package does not need scikit-learn. State format for production is still open (ADR 0001). |
+| `bootstrap_sharpe_diff` | `mlt/evaluation.py` | Paired circular block bootstrap of a Sharpe difference on the same bars; captures sampling noise, not selection bias. |
 | `run_online` | `mlt/models/online.py` | Causal walk-forward: at step *i* update with the sample that matured at *i* (row *i − horizon*), then predict row *i*. |
 | Settings | `mlt/config.py` | Dry-run unless both `DRY_RUN=false` and the confirmation phrase are set. |
 

@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from mlt.evaluation import metrics, simulate
+from mlt.evaluation import bootstrap_sharpe_diff, metrics, sharpe, simulate
 
 IDX = pd.date_range("2024-01-01", periods=6, freq="1h", tz="UTC")
 
@@ -66,3 +66,32 @@ def test_metrics_known_values():
     assert m["max_drawdown"] == pytest.approx(0.9 - 1)
     assert m["trades"] == 2 and m["exposure"] == pytest.approx(0.2)
     assert np.isfinite(m["sharpe"])
+
+
+def test_sharpe_matches_the_metrics_function():
+    net = pd.Series(np.random.default_rng(0).normal(0.0002, 0.004, 3000))
+    assert sharpe(net) == pytest.approx(metrics(net)["sharpe"])
+
+
+def test_bootstrap_identical_series_has_zero_difference():
+    net = pd.Series(np.random.default_rng(1).normal(0.0001, 0.004, 2000))
+    out = bootstrap_sharpe_diff(net, net, block=100, n_boot=200)
+    assert out["diff"] == 0 and out["lo"] == 0 and out["hi"] == 0
+
+
+def test_bootstrap_detects_a_clear_difference_and_keeps_pairing():
+    rng = np.random.default_rng(2)
+    noise = rng.normal(0, 0.004, 4000)
+    a = pd.Series(noise + 0.002)           # same noise, higher mean: the difference is certain
+    b = pd.Series(noise)
+    out = bootstrap_sharpe_diff(a, b, block=100, n_boot=300)
+    assert out["lo"] > 0 and out["p_not_above_zero"] == 0.0
+    c = pd.Series(rng.permutation(noise))          # same mean and std, different timing: the observed difference is 0
+    wide = bootstrap_sharpe_diff(b, c, block=100, n_boot=300)
+    assert wide["diff"] == pytest.approx(0.0, abs=1e-9)
+    assert wide["lo"] < 0 < wide["hi"]
+
+
+def test_bootstrap_rejects_short_or_mismatched_series():
+    with pytest.raises(ValueError):
+        bootstrap_sharpe_diff(pd.Series([0.0] * 50), pd.Series([0.0] * 50), block=100)

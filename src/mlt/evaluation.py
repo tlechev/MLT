@@ -82,3 +82,46 @@ def metrics(net: pd.Series, held: pd.Series | None = None,
         out["trades"] = int((change > 0).sum())
         out["turnover_per_year"] = float(change.sum()) / years if years > 0 else float("nan")
     return out
+
+
+def sharpe(net: np.ndarray | pd.Series, periods_per_year: int = HOURS_PER_YEAR) -> float:
+    """Annualised Sharpe ratio of a net-return series (no risk-free rate)."""
+    a = np.asarray(net, dtype=float)
+    sd = a.std(ddof=1) if len(a) > 1 else 0.0
+    return float(a.mean() / sd * np.sqrt(periods_per_year)) if sd > 0 else float("nan")
+
+
+def bootstrap_sharpe_diff(
+    net_a: pd.Series,
+    net_b: pd.Series,
+    block: int = 168,
+    n_boot: int = 1000,
+    seed: int = 0,
+    periods_per_year: int = HOURS_PER_YEAR,
+) -> dict:
+    """Paired circular block bootstrap of ``sharpe(a) - sharpe(b)`` on the same bars.
+
+    Both series are resampled with the SAME blocks, so their correlation is preserved. Returns the
+    observed difference, a 95 % percentile interval and the share of resamples with a difference
+    not above zero. It captures sampling noise, not selection bias from trying many candidates.
+    """
+    a = np.asarray(net_a, dtype=float)
+    b = np.asarray(net_b, dtype=float)
+    if len(a) != len(b) or len(a) < 2 * block:
+        raise ValueError("series must have the same length and at least two blocks")
+    n = len(a)
+    rng = np.random.default_rng(seed)
+    n_blocks = -(-n // block)
+    starts = rng.integers(0, n, size=(n_boot, n_blocks))
+    idx = ((starts[:, :, None] + np.arange(block)[None, None, :]) % n).reshape(n_boot, -1)[:, :n]
+    ra, rb = a[idx], b[idx]
+
+    def sh(x: np.ndarray) -> np.ndarray:
+        sd = x.std(axis=1, ddof=1)
+        with np.errstate(divide="ignore", invalid="ignore"):
+            return np.where(sd > 0, x.mean(axis=1) / sd * np.sqrt(periods_per_year), np.nan)
+
+    diffs = sh(ra) - sh(rb)
+    lo, hi = np.nanpercentile(diffs, [2.5, 97.5])
+    return {"diff": sharpe(a, periods_per_year) - sharpe(b, periods_per_year),
+            "lo": float(lo), "hi": float(hi), "p_not_above_zero": float(np.nanmean(diffs <= 0))}

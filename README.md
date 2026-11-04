@@ -8,8 +8,8 @@
 | | |
 |---|---|
 | **Current phase** | P1 – Research (in progress) |
-| **Last synced** | 2026-10-29 |
-| **Tests** | 70 passed, 0 failed |
+| **Last synced** | 2026-11-05 |
+| **Tests** | 78 passed, 0 failed |
 | **Modules done** | 5 / 11 |
 | **Decisions** | 2 accepted · 3 proposed · 0 rejected |
 <!-- END:auto:status -->
@@ -65,8 +65,8 @@
 | `config` | Typed settings from environment; dry-run is the default, live needs an explicit confirmation phrase. | done | 4 |
 | `data` | Candle providers (Deribit, Coinbase), one canonical OHLCV schema, validation, parquet cache. | done | 33 |
 | `features` | Pure feature functions, identical in research, backtest and live (no look-ahead). | stub | 0 |
-| `models` | Model-agnostic Forecaster contract plus the models that won experiments. | done | 7 |
-| `evaluation` | Research helpers: causal position-to-PnL accounting with costs and funding, performance metrics. The backtest module must reproduce its conventions. | done | 7 |
+| `models` | Model-agnostic Forecaster contract plus the models that won experiments. | done | 11 |
+| `evaluation` | Research helpers: causal position-to-PnL accounting with costs and funding, performance metrics. The backtest module must reproduce its conventions. | done | 11 |
 | `protocol` | Evaluation protocol (ADR 0004): frozen data window, development / validation / test blocks, a guard on the test block. | done | 7 |
 | `strategy` | Turns predictions into target positions (thresholds, cost filter). | stub | 0 |
 | `risk` | Position limits, daily loss halt, liquidation distance. | stub | 0 |
@@ -85,7 +85,7 @@ Module contracts and data flow: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 | [00_colab_bootstrap.ipynb](notebooks/00_colab_bootstrap.ipynb) | 00 – Colab bootstrap: Run this first in Google Colab (needed only for experiments that require PyTorch/GPU). | not started |
 | [01_data.ipynb](notebooks/01_data.ipynb) | 01 – Data: Goal: load the perpetual we will actually trade, validate it, cache it. Checks: gaps, duplicates, closed candles only, UTC. Add funding rates. | done |
 | [02_baselines.ipynb](notebooks/02_baselines.ipynb) | 02 – Baselines: Buy-and-hold, flat, and the previous linear model on the NEW data, with costs. | in progress |
-| [03_features_model.ipynb](notebooks/03_features_model.ipynb) | 03 – Features and models: Only features that exist live. Compare model families fairly (same data, costs, splits). | not started |
+| [03_features_model.ipynb](notebooks/03_features_model.ipynb) | 03 – Features and models: Only features that exist live. Compare model families fairly (same data, costs, splits). | in progress |
 | [04_validation.ipynb](notebooks/04_validation.ipynb) | 04 – Validation: Tune on an early window; test ONCE on a held-out later window. Costs and funding included. | not started |
 | [05_decision.ipynb](notebooks/05_decision.ipynb) | 05 – Decision: Does the candidate pass the research gate? Summarise evidence and update docs/decisions. | not started |
 <!-- END:auto:notebooks -->
@@ -107,6 +107,11 @@ Experiment results with numbers, data period and costs: [docs/RESEARCH_LOG.md](d
 ## 7. Recent changes
 
 <!-- BEGIN:auto:changes -->
+**2026-11-05**
+- **Added:** notebook 03_features_model (reference bars incl. two no-ML trend rules; online linear, ridge, gradient boosting and small neural network; live-only features with a causality check; walk-forward training; trial register; selection on development, confirmation on validation; paired block bootstrap); status in progress, to be run by the owner
+- **Added:** mlt.models.walkforward (causal batch retraining), mlt.models.sklearn_wrap (scikit-learn adapter for Forecaster), evaluation.sharpe and evaluation.bootstrap_sharpe_diff, with 8 unit tests; scikit-learn in the dev and research extras
+- **Docs:** ARCHITECTURE contracts for the new helpers; ADR 0001 plan marked as approved; STATUS step 3
+
 **2026-10-29**
 - **Added:** R-002 in the research log (baselines on the owner's run: flat, buy-and-hold and the previous linear model with costs and funding; cost, funding and calendar-year sensitivity; shifted-timing test)
 - **Added:** ADR 0004 (evaluation protocol: fixed data window and time blocks), proposed
@@ -125,14 +130,6 @@ Experiment results with numbers, data period and costs: [docs/RESEARCH_LOG.md](d
 - **Added:** notebook 02_baselines (flat, buy-and-hold, previous linear model, cost and funding sensitivity, calendar years, shifted-timing test); status in progress, to be run by the owner
 - **Added:** 13 unit tests for the accounting, the online model and the causal protocol
 - **Docs:** ARCHITECTURE contracts and principle for helpers built during research; STATUS step 3
-
-**2026-10-27**
-- **Added:** evidence E38 (smoke test stage 1: authentication with the uri-claim JWT and read-only private calls succeed for the owner's key)
-- **Added:** evidence E39 (smoke test stage 2: a minimum-size post-only order was accepted, queried and cancelled on the Global Derivatives gateway)
-- **Added:** R-001 in the research log (01_data run by the owner: 26,280 clean hourly candles, 26,244 funding observations, specification identical to the Coinbase gateway); evidence E40
-- **Changed:** V3 now shows stages 0-1 done, stage 2 (order lifecycle) pending; STATUS step 1a narrowed to stage 2
-- **Changed:** V3 closed technically for Global Derivatives, still open for the EU-licensed product; ADR 0002 stays proposed; STATUS step 1a removed and the route decision added to open questions
-- **Changed:** notebook 01_data is done (comparison table and findings filled with the printed numbers); ADR 0003 result recorded; V2 recorded as not obtainable in writing through chat support; STATUS steps updated
 
 Full history: [docs/CHANGELOG.md](docs/CHANGELOG.md).
 <!-- END:auto:changes -->

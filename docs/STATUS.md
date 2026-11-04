@@ -6,8 +6,8 @@ Single place that answers "where are we, what is next and why". Tables are gener
 | | |
 |---|---|
 | **Current phase** | P1 – Research (in progress) |
-| **Last synced** | 2026-10-29 |
-| **Tests** | 70 passed, 0 failed |
+| **Last synced** | 2026-11-05 |
+| **Tests** | 78 passed, 0 failed |
 | **Modules done** | 5 / 11 |
 | **Decisions** | 2 accepted · 3 proposed · 0 rejected |
 <!-- END:auto:status -->
@@ -24,7 +24,7 @@ Each step states **why** it is needed and its **exit criterion**, so progress is
 |---|---|---|---|
 | 1 | Run checks V1–V3 with Coinbase retail support at help.coinbase.com (not the Derivatives Exchange desk, E28): derivatives available for the account, serving entity and product, API access | Coinbase is chosen, but eligibility for a Bulgarian resident and API access are unverified; trading where it is not allowed is not an option | V1–V3 results recorded in the evidence file (V2 cannot be had in writing through chat support: use a written legal opinion); ADR 0002 `accepted`; if the checks fail, V4 (Kraken, then OKX) is run before any research is finalised |
 | 2 | Accept [ADR 0003](decisions/0003-instrument-and-data-source.md) for the chosen route (owner decision) | Research must use the instrument that will be traded; the 01_data result supports the Deribit series for Global Derivatives | ADR 0003 `accepted` with its evidence linked; reopened if the route changes |
-| 3 | Approve the experiment plan in [ADR 0001](decisions/0001-model-stack.md), then build and run `03_features_model`: candidate model families on the same data, costs and blocks; selection uses development and validation only | A model is chosen only by experiment (ADR 0001); the bars are in R-002 and R-003 and the protocol is fixed (ADR 0004) | Notebook 03 `done`; R-004 with numbers; ADR 0001 `accepted` or `rejected` with evidence |
+| 3 | Run `03_features_model` (written and dry-run on synthetic data with a planted signal; the owner runs it: first with `QUICK = True`, then the full run, roughly 10 minutes or more) and record it as R-004 with the trial register | A model is chosen only by experiment (ADR 0001); the bars are in R-002 and R-003 and the protocol is fixed (ADR 0004) | Notebook 03 `done`; R-004 with numbers and the trial count; ADR 0001 `accepted` or `rejected` with evidence |
 
 ## Open questions and risks
 
@@ -50,8 +50,8 @@ Each step states **why** it is needed and its **exit criterion**, so progress is
 | `config` | Typed settings from environment; dry-run is the default, live needs an explicit confirmation phrase. | done | 4 |
 | `data` | Candle providers (Deribit, Coinbase), one canonical OHLCV schema, validation, parquet cache. | done | 33 |
 | `features` | Pure feature functions, identical in research, backtest and live (no look-ahead). | stub | 0 |
-| `models` | Model-agnostic Forecaster contract plus the models that won experiments. | done | 7 |
-| `evaluation` | Research helpers: causal position-to-PnL accounting with costs and funding, performance metrics. The backtest module must reproduce its conventions. | done | 7 |
+| `models` | Model-agnostic Forecaster contract plus the models that won experiments. | done | 11 |
+| `evaluation` | Research helpers: causal position-to-PnL accounting with costs and funding, performance metrics. The backtest module must reproduce its conventions. | done | 11 |
 | `protocol` | Evaluation protocol (ADR 0004): frozen data window, development / validation / test blocks, a guard on the test block. | done | 7 |
 | `strategy` | Turns predictions into target positions (thresholds, cost filter). | stub | 0 |
 | `risk` | Position limits, daily loss halt, liquidation distance. | stub | 0 |
@@ -68,7 +68,7 @@ Each step states **why** it is needed and its **exit criterion**, so progress is
 | [00_colab_bootstrap.ipynb](../notebooks/00_colab_bootstrap.ipynb) | 00 – Colab bootstrap: Run this first in Google Colab (needed only for experiments that require PyTorch/GPU). | not started |
 | [01_data.ipynb](../notebooks/01_data.ipynb) | 01 – Data: Goal: load the perpetual we will actually trade, validate it, cache it. Checks: gaps, duplicates, closed candles only, UTC. Add funding rates. | done |
 | [02_baselines.ipynb](../notebooks/02_baselines.ipynb) | 02 – Baselines: Buy-and-hold, flat, and the previous linear model on the NEW data, with costs. | in progress |
-| [03_features_model.ipynb](../notebooks/03_features_model.ipynb) | 03 – Features and models: Only features that exist live. Compare model families fairly (same data, costs, splits). | not started |
+| [03_features_model.ipynb](../notebooks/03_features_model.ipynb) | 03 – Features and models: Only features that exist live. Compare model families fairly (same data, costs, splits). | in progress |
 | [04_validation.ipynb](../notebooks/04_validation.ipynb) | 04 – Validation: Tune on an early window; test ONCE on a held-out later window. Costs and funding included. | not started |
 | [05_decision.ipynb](../notebooks/05_decision.ipynb) | 05 – Decision: Does the candidate pass the research gate? Summarise evidence and update docs/decisions. | not started |
 <!-- END:auto:notebooks -->

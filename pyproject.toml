@@ -15,7 +15,8 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest>=8", "pytest-cov", "ruff", "pre-commit", "nbstripout", "jupyter", "matplotlib", "PyJWT>=2.8", "cryptography>=42"]
+dev = ["pytest>=8", "pytest-cov", "ruff", "pre-commit", "nbstripout", "jupyter", "matplotlib", "PyJWT>=2.8", "cryptography>=42", "scikit-learn>=1.4"]
+research = ["scikit-learn>=1.4"]   # model comparison (notebook 03)
 torch = ["torch"]          # optional: only when an experiment justifies it (see docs/decisions)
 live = ["coinbase-advanced-py", "python-dotenv", "PyJWT>=2.8", "cryptography>=42"]
 

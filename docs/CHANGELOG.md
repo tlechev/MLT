@@ -4,6 +4,16 @@ Dated history of what changed and why. Groups: Added, Changed, Fixed, Removed, D
 
 <!-- changelog:start -->
 
+## 2026-11-05
+
+### Added
+- notebook 03_features_model (reference bars incl. two no-ML trend rules; online linear, ridge, gradient boosting and small neural network; live-only features with a causality check; walk-forward training; trial register; selection on development, confirmation on validation; paired block bootstrap); status in progress, to be run by the owner
+- mlt.models.walkforward (causal batch retraining), mlt.models.sklearn_wrap (scikit-learn adapter for Forecaster), evaluation.sharpe and evaluation.bootstrap_sharpe_diff, with 8 unit tests; scikit-learn in the dev and research extras
+
+### Docs
+- ARCHITECTURE contracts for the new helpers; ADR 0001 plan marked as approved; STATUS step 3
+
+
 ## 2026-10-29
 
 ### Added

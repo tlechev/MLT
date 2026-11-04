@@ -8,7 +8,7 @@ Which model families and training schemes should the production path support?
 Small models can run on NumPy, keeping live inference light and identical to research.
 Heavier models (sequence nets, GPU) may be trained in Colab and exported (NumPy/ONNX) for live.
 
-## Experiment (plan, awaiting the owner's approval)
+## Experiment (plan, approved by the owner)
 Notebook `03_features_model`, under the protocol of [ADR 0004](0004-evaluation-protocol.md), the data handling of [ADR 0005](0005-data-handling.md) and the cost model of R-002 / R-003 (taker 3.5 bp from the gateway, funding included). The test block is not read.
 
 - **Reference bars:** flat, buy-and-hold, the previous linear model (R-003) and a no-ML trend rule (sign of the 24 h or 72 h return), to show whether machine learning adds anything over a rule.
